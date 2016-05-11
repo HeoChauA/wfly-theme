@@ -1,9 +1,0 @@
-{% extends 'layout.twig' %}
-
-{% block content %}
-  <h2>{{term.name}}</h2>
-  {% for post in term.get_posts({'posts_per_page': count, 'paged': paged}) %}
-    {% include ["taxonomy-"~term.id~".twig", "taxonomy-"~term.taxonomy~".twig", 'archive-tease.twig'] %}
-  {% endfor %}
-  {% include 'pagination.twig' %}
-{% endblock %}
