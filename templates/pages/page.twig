@@ -9,7 +9,7 @@
   
   {% for post in posts %}
     {% if not function('is_page') %}
-      {{ post.title }}
+      <h3 class="post-title"><a href="{{ post.link }}">{{ post.title }}</a></h3>
     {% endif %}
     {{ post.content }}
   {% endfor %}
