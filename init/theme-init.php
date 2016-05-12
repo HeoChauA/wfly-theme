@@ -64,7 +64,7 @@ function set_posts_per_page( $query ) {
 
   global $wp_the_query;
 
-  if ( ( $query === $wp_the_query ) && ( $query->is_archive() ) ) {
+  if ( (!is_admin()) && ( $query === $wp_the_query ) && ( $query->is_archive() ) ) {
     $query->set( 'posts_per_page', 1 );
   }
 
@@ -106,9 +106,9 @@ function sidebar($name) {
   return;
 }
 
-/*function shortcode($name) {
+function shortcode($name) {
   echo do_shortcode('['.$name.']');
-}*/
+}
 
 add_filter('timber_context', 'wf_twig_data');
 function wf_twig_data($data){
@@ -123,7 +123,7 @@ function wf_twig_data($data){
 
   $data['related'] = TimberHelper::function_wrapper( 'related' );
   $data['sidebar'] = TimberHelper::function_wrapper( 'sidebar' );
-  //$data['shortcode'] = TimberHelper::function_wrapper( 'shortcode' );
+  $data['shortcode'] = TimberHelper::function_wrapper( 'shortcode' );
 
   return $data;
 }

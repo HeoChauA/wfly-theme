@@ -51,4 +51,80 @@ if (function_exists('register_sidebar')) {
     'after_title' => '</h3>'
   ));
 }
+
+/* Add custom new widget arena */
+add_action( 'widgets_init', 'create_wf_Widget' );
+function create_wf_Widget() {
+  register_widget('wf_Widget');
+}
+
+class wf_Widget extends WP_Widget {
+  /**
+   * Setting widget: name, base ID
+   */
+  function __construct() {
+    parent::__construct (
+      'wf_widget', // widget ID
+      'WF Widget', // widget name
+      array(
+        'description' => '' // décription
+      )
+    );
+  }
+  /**
+   * Create form option for widget
+   */
+  function form( $instance ) {
+    parent::form( $instance );
+    // Default value on form
+    $default = array(
+      'title' => ''
+    );
+    $instance = wp_parse_args( (array) $instance, $default);
+    // Create each value for each default value on $default array
+    $title = esc_attr( $instance['title'] );
+    // Display form option of widget
+    echo 'Title <input class="widefat" type="text" name="'.$this->get_field_name('title').'" value="'.$title.'" />';
+  }
+  /**
+   * save widget form
+   */
+  function update( $new_instance, $old_instance ) {
+    parent::update( $new_instance, $old_instance );
+    $instance = $old_instance;
+    $instance['title'] = strip_tags($new_instance['title']);
+    return $instance;
+  }
+  /**
+   * Show widget
+   */
+  function widget( $args, $instance ) {
+    extract( $args );
+    $title = apply_filters( 'widget_title', $instance['title'] );
+    echo $before_widget;
+    echo $before_title.$title.$after_title;
+    echo $after_widget;
+  }
+}
+
+/* Add custom post type */
+function create_my_post_types() {
+  register_post_type( 'movies', 
+    array(
+      'labels' => array(
+        'name' => __( 'Movie' ),
+        'singular_name' => __( 'Movie' )
+      ),
+      'supports' => array(
+        'title',
+        'editor',
+        'thumbnail',
+        'comments',
+      ),
+      'public' => true,
+      'has_archive' => true,
+    )
+  );
+}
+add_action( 'init', 'create_my_post_types' );
 ?>
