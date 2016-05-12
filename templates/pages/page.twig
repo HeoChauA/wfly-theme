@@ -8,6 +8,7 @@
   {% endif %}
 
   {% for post in posts %}
+    <h2 class="post-title"><a href="{{post.link}}">{{ post.title }}</a></h2>
     {{ post.content }}
   {% endfor %}
   {% include 'comments.twig' %}
