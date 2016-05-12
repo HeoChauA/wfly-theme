@@ -3,5 +3,5 @@
 via the functions.php file. You could also this in each PHP file if you find that too confusing. */
 
 $context = Timber::get_context();
-$context['posts'] = Timber::get_posts();
+$context['post'] = Timber::get_posts();
 Timber::render('page.twig', $context);

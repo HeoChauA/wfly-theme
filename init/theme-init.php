@@ -106,6 +106,10 @@ function sidebar($name) {
   return;
 }
 
+/*function shortcode($name) {
+  echo do_shortcode('['.$name.']');
+}*/
+
 add_filter('timber_context', 'wf_twig_data');
 function wf_twig_data($data){
   // Theme setting
@@ -119,6 +123,7 @@ function wf_twig_data($data){
 
   $data['related'] = TimberHelper::function_wrapper( 'related' );
   $data['sidebar'] = TimberHelper::function_wrapper( 'sidebar' );
+  //$data['shortcode'] = TimberHelper::function_wrapper( 'shortcode' );
 
   return $data;
 }
