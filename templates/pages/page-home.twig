@@ -1,0 +1,13 @@
+{% extends 'layout.twig' %}
+
+{% block content %}
+  {{ shortcode('custom_shortcode', 'post_type=movies per_page=1') }}
+{% endblock %}
+
+{% block aside %}
+  {% block sidebar %}
+    <aside>
+      {{ acfwidget('name', 'wf_widget-3') }}
+    </aside>
+  {% endblock %}
+{% endblock %}

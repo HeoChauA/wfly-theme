@@ -24,11 +24,13 @@ function wf_styles() {
 add_action('wp_enqueue_scripts', 'wf_styles');
 
 /* Enable Function */
+// Theme support navigation
 function wf_menu() {
   register_nav_menus();
 }
 add_action('init', 'wf_menu');
 
+// Theme support custom logo
 function wf_setup() {
   add_theme_support( 'custom-logo', array(
     'flex-width' => true,
@@ -36,6 +38,7 @@ function wf_setup() {
 }
 add_action( 'after_setup_theme', 'wf_setup' );
 
+// Theme support post thumbnail
 add_theme_support( 'post-thumbnails' );
 
 /* Add Dynamic Siderbar */
@@ -52,63 +55,8 @@ if (function_exists('register_sidebar')) {
   ));
 }
 
-/* Add custom new widget arena */
-add_action( 'widgets_init', 'create_wf_Widget' );
-function create_wf_Widget() {
-  register_widget('wf_Widget');
-}
-
-class wf_Widget extends WP_Widget {
-  /**
-   * Setting widget: name, base ID
-   */
-  function __construct() {
-    parent::__construct (
-      'wf_widget', // widget ID
-      'WF Widget', // widget name
-      array(
-        'description' => '' // décription
-      )
-    );
-  }
-  /**
-   * Create form option for widget
-   */
-  function form( $instance ) {
-    parent::form( $instance );
-    // Default value on form
-    $default = array(
-      'title' => ''
-    );
-    $instance = wp_parse_args( (array) $instance, $default);
-    // Create each value for each default value on $default array
-    $title = esc_attr( $instance['title'] );
-    // Display form option of widget
-    echo 'Title <input class="widefat" type="text" name="'.$this->get_field_name('title').'" value="'.$title.'" />';
-  }
-  /**
-   * save widget form
-   */
-  function update( $new_instance, $old_instance ) {
-    parent::update( $new_instance, $old_instance );
-    $instance = $old_instance;
-    $instance['title'] = strip_tags($new_instance['title']);
-    return $instance;
-  }
-  /**
-   * Show widget
-   */
-  function widget( $args, $instance ) {
-    extract( $args );
-    $title = apply_filters( 'widget_title', $instance['title'] );
-    echo $before_widget;
-    echo $before_title.$title.$after_title;
-    echo $after_widget;
-  }
-}
-
 /* Add custom post type */
-function create_my_post_types() {
+/*function create_my_post_types() {
   register_post_type( 'movies', 
     array(
       'labels' => array(
@@ -127,4 +75,23 @@ function create_my_post_types() {
   );
 }
 add_action( 'init', 'create_my_post_types' );
+
+function create_custom_taxonomy() {
+  $labels = array(
+    'name' => 'Category Movie',
+    'singular' => 'Category Movie',
+    'menu_name' => 'Category Movie'
+  );
+  $args = array(
+    'labels'                     => $labels,
+    'hierarchical'               => false,
+    'public'                     => true,
+    'show_ui'                    => true,
+    'show_admin_column'          => true,
+    'show_in_nav_menus'          => true,
+    'show_tagcloud'              => true,
+  );
+  register_taxonomy('catmovie', 'movies', $args);
+}
+add_action( 'init', 'create_custom_taxonomy', 0 );*/
 ?>

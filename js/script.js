@@ -5,6 +5,7 @@
 
   $(document).ready(function() {
     // Call to function
+    test();
   });
 
   $(window).load(function() {

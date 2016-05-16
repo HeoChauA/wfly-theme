@@ -58,6 +58,78 @@ function wf_plugin_activation() {
   tgmpa( $plugins, $config );
 }
 
+// Theme support widget ID
+function spice_get_widget_id($widget_instance) { 
+  if ($widget_instance->number=="__i__"){
+    echo "<p><strong>Widget ID is</strong>: Pls save the widget first!</p>";
+  } else {
+    echo "<p><strong>Widget ID is: </strong>" .$widget_instance->id. "</p>";
+  }
+}
+add_action('in_widget_form', 'spice_get_widget_id');
+
+/* Add custom new widget arena */
+add_action( 'widgets_init', 'create_wf_Widget' );
+function create_wf_Widget() {
+  register_widget('wf_Widget');
+}
+
+class wf_Widget extends WP_Widget {
+  /**
+   * Setting widget: name, base ID
+   */
+  public function __construct() {
+    $widget_ops = array(
+      'classname' => 'wf_widget',
+      'description' => __( 'Custom widget.' ),
+      'customize_selective_refresh' => true,
+    );
+    $control_ops = array( 'width' => 400, 'height' => 350 );
+    parent::__construct( 'wf_widget', __( 'WF Widget' ), $widget_ops, $control_ops );
+  }
+  /**
+   * Show widget
+   */
+  public function widget( $args, $instance ) {
+    $title    = apply_filters( 'widget_title', $instance['title'] );
+    $message  = $instance['message'];
+    echo $args['before_widget'];
+    if ( $title ) {
+      echo $args['before_title'] . $title . $args['after_title'];
+    }
+    echo $message;
+    echo $args['after_widget'];
+  }
+  /**
+   * save widget form
+   */
+  function update( $new_instance, $old_instance ) {
+    // parent::update( $new_instance, $old_instance );
+    $instance = $old_instance;
+    $instance['title'] = strip_tags($new_instance['title']);
+    $instance['message'] = strip_tags( $new_instance['message'] );
+    return $instance;
+  }
+  /**
+   * Create form option for widget
+   */
+  function form( $instance ) {
+    $title      = esc_attr( $instance['title'] );
+    $message    = esc_attr( $instance['message'] );
+    ?>
+     
+    <p>
+      <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label> 
+      <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo $title; ?>" />
+    </p>
+    <p>
+      <label for="<?php echo $this->get_field_id('message'); ?>"><?php _e('Simple Message'); ?></label> 
+      <textarea class="widefat" rows="16" cols="20" id="<?php echo $this->get_field_id('message'); ?>" name="<?php echo $this->get_field_name('message'); ?>"><?php echo $message; ?></textarea>
+    </p>
+    <?php 
+  }
+}
+
 // Set per page on each page
 add_action( 'pre_get_posts',  'set_posts_per_page'  );
 function set_posts_per_page( $query ) {
@@ -73,8 +145,8 @@ function set_posts_per_page( $query ) {
 
 if ( ! class_exists( 'Timber' ) ) {
   add_action( 'admin_notices', function() {
-      echo '<div class="error"><p>Timber not activated. Make sure you activate the plugin in <a href="' . esc_url( admin_url( 'plugins.php#timber' ) ) . '">' . esc_url( admin_url( 'plugins.php' ) ) . '</a></p></div>';
-    } );
+    echo '<div class="error"><p>Timber not activated. Make sure you activate the plugin in <a href="' . esc_url( admin_url( 'plugins.php#timber' ) ) . '">' . esc_url( admin_url( 'plugins.php' ) ) . '</a></p></div>';
+  });
   return;
 }
 
@@ -106,8 +178,16 @@ function sidebar($name) {
   return;
 }
 
-function shortcode($name) {
-  echo do_shortcode('['.$name.']');
+function shortcode($name, $value) {
+  echo do_shortcode('['.$name.' '.$value.']');
+  return;
+}
+
+function acfwidget($name, $widgetid) {
+  if (get_field($name, 'widget_'.$widgetid)) {
+    echo get_field($name, 'widget_'.$widgetid);
+  }
+  return;
 }
 
 add_filter('timber_context', 'wf_twig_data');
@@ -124,6 +204,7 @@ function wf_twig_data($data){
   $data['related'] = TimberHelper::function_wrapper( 'related' );
   $data['sidebar'] = TimberHelper::function_wrapper( 'sidebar' );
   $data['shortcode'] = TimberHelper::function_wrapper( 'shortcode' );
+  $data['acfwidget'] = TimberHelper::function_wrapper( 'acfwidget' );
 
   return $data;
 }
